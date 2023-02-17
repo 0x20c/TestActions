@@ -1,34 +1,36 @@
-name: Build and Release
-
+name: Build and Release Go App for macOS
 on:
   push:
     branches:
       - main
-
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+    runs-on: macOS-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Go
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.16
+        go-version: 1.17
     - name: Build
-      run: go build -o hello/hello main.go
-    - name: Archive
-      uses: actions/upload-artifact@v2
+      run: |
+        cd hello
+        go build -o helloworld main.go
+    - name: Zip
+      uses: montudor/action-zip@v0.2.0
       with:
-        name: hello
-        path: hello/hello
+        args: |
+          -r helloworld.zip helloworld
     - name: Create Release
+      id: create_release
       uses: ncipollo/release-action@v1.12.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: "Release ${{ github.ref }}"
-        tag: ${{ github.ref }}
-        owner: ${{ github.repository_owner }}
-        repo: ${{ github.repository }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Release ${{ github.sha }}
+        body: |
+          Release ${{ github.sha }}
+        tag: ${{ github.sha }}
+        files: |
+          helloworld.zip
