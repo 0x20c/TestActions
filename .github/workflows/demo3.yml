@@ -1,51 +1,53 @@
-name: Build and Release
+name: .NET Core Desktop
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
+
   build:
-    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        go-version: [1.16.x]
+        configuration: [Release]
+
+    runs-on: windows-2019
+
+    env:
+      Solution_Name: Rubeus.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
 
-      - name: Build Application
-        run: go build -o hello/hello hello/main.go
+    # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: Zip Application
-        uses: montudor/action-zip@v1.0.0
-        with:
-          args: -r -9 hello.zip hello/
 
-      - name: Create Release
-        uses: ncipollo/release-action@v1.12.0
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
-          body: |
-            This is an automated release for version v${{ github.run_number }}.
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # Restore the application to populate the obj folder with RuntimeIdentifiers
+    - name: Restore the application
+      # run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      run: |
+        msbuild ${{ github.workspace }}\Rubeus.sln
+      env:
+        Configuration: ${{ matrix.configuration }}
 
-      - name: Upload Release Asset
-        uses: svenstaro/upload-release-action@2.4.1
-        with:
-          asset_path: ./hello.zip
-          asset_name: hello-${{ matrix.os }}-${{ matrix.go-version }}.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Upload the artifact 
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Rubeus
+        path: ${{ github.workspace }}
