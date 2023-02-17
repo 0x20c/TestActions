@@ -1,36 +1,53 @@
-name: Build and Release Go App for macOS
+name: Build and Release Go Application
+
 on:
   push:
     branches:
       - main
+
 jobs:
-  build:
-    runs-on: macOS-latest
+  build-and-release:
+    runs-on: macos-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
-    - name: Build
-      run: |
-        cd hello
-        go build -o helloworld main.go
-    - name: Zip
-      uses: montudor/action-zip@v0.2.0
-      with:
-        args: |
-          -r helloworld.zip helloworld
-    - name: Create Release
-      id: create_release
-      uses: ncipollo/release-action@v1.12.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        name: Release ${{ github.sha }}
-        body: |
-          Release ${{ github.sha }}
-        tag: ${{ github.sha }}
-        files: |
-          helloworld.zip
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+          platform: macos
+
+      - name: Build
+        run: go build -o hello/hello hello/main.go
+
+      - name: Archive Artifacts
+        uses: montudor/action-zip@v0.3.0
+        with:
+          files: |
+            hello/hello
+          filename: artifacts
+
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1.12.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release:
+            - Add hello world program
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts.zip
+          asset_name: artifacts.zip
+          asset_content_type: application/zip
