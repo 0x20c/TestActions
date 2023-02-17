@@ -25,15 +25,25 @@ jobs:
     - name: Build
       run: |
         cd hello
-        GOOS=${{ matrix.os }} GOARCH=amd64 go build -o hello-world
+        
+        if [ "${{ matrix.os }}" = "macos-latest" ]; then
+          GOOS=darwin GOARCH=amd64 go build -o hello-world
+        elif [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+          GOOS=linux GOARCH=amd64 go build -o hello-world
+        elif [ "${{ matrix.os }}" = "windows-latest" ]; then
+          GOOS=windows GOARCH=amd64 go build -o hello-world.exe
+        fi
         
     - name: Create Release
       uses: ncipollo/release-action@v1.12.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        artifacts: |
-          ./hello/hello-world
-        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: v1.0.0
+        release_name: Release v1.0.0
         body: Automated release created by GitHub Actions
+        draft: false
+        prerelease: false
         
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1.0.2
@@ -41,6 +51,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./hello/hello-world
-        asset_name: hello-world-${{ matrix.os }}
+        asset_path: ./hello/hello-world${{ matrix.extension }}
+        asset_name: hello-world${{ matrix.extension }}
         asset_content_type: application/octet-stream
+      matrix:
+        extension: ['.exe', '', '']
+        os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
