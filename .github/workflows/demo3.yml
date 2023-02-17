@@ -1,4 +1,4 @@
-name: Build and Release With OpenAi
+name: Build and Release
 
 on:
   push:
@@ -8,59 +8,27 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        go_version: [1.16.x]
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Go ${{ matrix.go_version }}
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go_version }}
-
-      - name: Build
-        run: |
-          cd hello
-          GOOS=linux GOARCH=amd64 go build -o hello-linux
-          GOOS=windows GOARCH=amd64 go build -o hello-windows.exe
-          GOOS=darwin GOARCH=amd64 go build -o hello-darwin
-
-      - name: Create Release
-        id: create_release
-        uses: ncipollo/release-action@v1.12.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset Linux
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./hello/hello-linux
-          asset_name: hello-linux
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset Windows
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./hello/hello-windows.exe
-          asset_name: hello-windows.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset macOS
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./hello/hello-darwin
-          asset_name: hello-darwin
-          asset_content_type: application/octet-stream
+    - uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+    - name: Build
+      run: go build -o hello/hello main.go
+    - name: Archive
+      uses: actions/upload-artifact@v2
+      with:
+        name: hello
+        path: hello/hello
+    - name: Create Release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        name: "Release ${{ github.ref }}"
+        tag: ${{ github.ref }}
+        owner: ${{ github.repository_owner }}
+        repo: ${{ github.repository }}
+        token: ${{ secrets.GITHUB_TOKEN }}
