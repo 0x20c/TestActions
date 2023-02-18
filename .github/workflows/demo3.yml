@@ -46,7 +46,7 @@ jobs:
           body: This is the first release of my app.
       
       - name: Upload to Release
-        uses: svenstaro/upload-release-action@v2.4.1
+        uses: svenstaro/upload-release-action@2.4.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: hello/hello
