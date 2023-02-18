@@ -40,6 +40,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v0.1.15
         with:
+          token: ${{ secrets.ACTIONS_TOKEN }}
           files: hello/hello
           tag_name: ${{ github.ref }}
           body: This is the first release of my app.
