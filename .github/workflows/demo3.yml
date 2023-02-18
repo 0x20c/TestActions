@@ -41,16 +41,15 @@ jobs:
         uses: softprops/action-gh-release@v0.1.15
         with:
           files: hello
-          tag_name: v1.0.0
-          name: Release v1.0.0
+          tag_name: ${{ github.ref }}
           body: This is the first release of my app.
       
       - name: Upload to Release
         uses: svenstaro/upload-release-action@2.4.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: hello/hello
-          asset_name: hello
+          file: hello
+          asset_name: hello_macOS
           tag: ${{ github.ref }}
           overwrite: true
           body: This is the first release
