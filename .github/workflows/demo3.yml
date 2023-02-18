@@ -40,7 +40,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v0.1.15
         with:
-          files: hello
+          files: hello/hello
           tag_name: ${{ github.ref }}
           body: This is the first release of my app.
       
@@ -48,7 +48,7 @@ jobs:
         uses: svenstaro/upload-release-action@2.4.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: hello
+          file: hello/hello
           asset_name: hello_macOS
           tag: ${{ github.ref }}
           overwrite: true
