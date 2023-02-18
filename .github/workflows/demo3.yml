@@ -1,53 +1,29 @@
-name: .NET Core Desktop
+name: Hello World
+
+run-name: hello-world
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
-  build:
-
-    strategy:
-      matrix:
-        configuration: [Release]
-
-    runs-on: windows-2019
-
-    env:
-      Solution_Name: Rubeus.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-
+  # 作业名
+  build-go-project:
+    # 选择运行器
+    runs-on: macos-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: CheckOut
+        uses: actions/checkout@v3
 
-    # Install the .NET Core workload
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 'stable'
+        run: go version
 
-    # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
-
-
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      # run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      run: |
-        msbuild ${{ github.workspace }}\Rubeus.sln
-      env:
-        Configuration: ${{ matrix.configuration }}
-
-
-    # Upload the artifact 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: Rubeus
-        path: ${{ github.workspace }}
+      - name: Build
+        run: |
+          cd hello
+          go run main.go
+          go build main.go
