@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: 'stable'
-        run: go version
+      - run: go version
 
       - name: Build
         run: |
