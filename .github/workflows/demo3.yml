@@ -36,8 +36,21 @@ jobs:
           path: hello/hello
       - run: pwd && ls
 
-      - name: Release
+      - name: Create Release
+        id: create_release
         uses: softprops/action-gh-release@v0.1.15
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: hello
+          tag_name: v1.0.0
+          name: Release v1.0.0
+          body: This is the first release of my app.
+      
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@v2.4.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: hello/hello
+          asset_name: hello
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: This is the first release
