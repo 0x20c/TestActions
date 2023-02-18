@@ -27,11 +27,11 @@ jobs:
           ls
           cd hello
           go run main.go
-          go build -o main main.go
+          go build -o hello main.go
       
       - name: Upload Build Project
         uses: actions/upload-artifact@v3
         with:
           name: hello
-          path: main
+          path: hello/hello
       - run: pwd && ls
