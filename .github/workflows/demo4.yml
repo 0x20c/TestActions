@@ -1,0 +1,22 @@
+name: Print uname
+
+run-name: test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  uname:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: CheckOut
+        uses: actions/checkout@v3
+
+      - name: print uname
+        run: uname -ar
