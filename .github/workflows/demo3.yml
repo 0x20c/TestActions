@@ -24,6 +24,7 @@ jobs:
 
       - name: Build
         run: |
+          ls
           cd hello
           go run main.go
           go build main.go
