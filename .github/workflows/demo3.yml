@@ -47,7 +47,7 @@ jobs:
       - name: Upload to Release
         uses: svenstaro/upload-release-action@2.4.1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.ACTIONS_TOKEN }}
           file: hello/hello
           asset_name: hello_macOS
           tag: ${{ github.ref }}
