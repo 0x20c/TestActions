@@ -17,7 +17,10 @@ jobs:
         with:
           repository: GhostPack/Rubeus
           ref: master
-          path: ${{ github.repository }}\Rubeus
+          path: Rubeus
+      - run: |
+          pwd
+          ls
 
       - name: Install .Net Core
         uses: actions/setup-dotnet@v3
