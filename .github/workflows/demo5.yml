@@ -1,0 +1,20 @@
+name: Variable Test
+
+run-name: github actions variable
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  USE_ID: 1
+  USER_NAME: Chirs
+
+jobs:
+  job-1:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: print name
+        if: ${{ env.USE_ID == '1' }}
+        run: echo "$USER_NAME"
