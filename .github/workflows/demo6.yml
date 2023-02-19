@@ -7,6 +7,11 @@ on:
     branches:
       - main
 
+env:
+  LINUX_BIN: main-linux
+  WIN_BIN: main-win.exe
+  MAC_BIN: main-darwin
+
 jobs:
   build-all:
     strategy:
@@ -32,7 +37,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           cd hello
-          go build -o main-linux .
+          go build -o $LINUX_BIN .
           ls
       
       - name: Build on windows
@@ -44,7 +49,7 @@ jobs:
           $env:GOOS = "windows"
           $env:GOARCH = "amd64"
           cd hello
-          go build -o main-win.exe .
+          go build -o $WIN_BIN .
           ls
       
       - name: Build on macOS
@@ -54,5 +59,26 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           cd hello
-          go build -o main-darwin .
+          go build -o $MAC_BIN .
           ls
+
+      - name: Upload linux bin
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: main
+          path: hello/$LINUX_BIN
+
+      - name: Upload windows bin
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: main
+          path: hello/$WIN_BIN
+
+      - name: Upload macOS bin
+        if: ${{ matrix.os == 'macos-latest' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: main
+          path: hello/$MAC_BIN
