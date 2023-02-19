@@ -9,6 +9,11 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        # 仅 Release 版本
+        CONFIGURATION: [Release]
+    
     runs-on: windows-2019
 
     steps:
@@ -33,11 +38,15 @@ jobs:
           msbuild-architecture: x64
 
       - name: Restore the application
+        # run: msbuild ${{ github.workspace }}\Rubeus\Rubeus.sln
+        # run: msbuild /t:restore /p:Configuration=Release /p:Platform="Any CPU" \Rubeus\Rubeus.sln
         run: |
-          msbuild ${{ github.workspace }}\Rubeus\Rubeus.sln
+          msbuild /t:restore /p:Configuration=$env:Configuration /p:Platform="Any CPU" \Rubeus\Rubeus.sln
+        env:
+          Configuration: ${{ matrix.CONFIGURATION }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: Rubeus
-          path: ${{ github.repository }}\Rubeus
+          path: Rubeus
