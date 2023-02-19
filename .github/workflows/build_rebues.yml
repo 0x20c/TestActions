@@ -33,12 +33,12 @@ jobs:
         #   msbuild-architecture: x64
 
       - name: Restore the application
-        # run: msbuild ${{ github.workspace }}\Rubeus\Rubeus.sln
+        run: msbuild ${{ github.workspace }}\Rubeus\Rubeus.sln
         # run: msbuild /t:restore /p:Configuration=Release /p:Platform="Any CPU" ${{ github.workspace }}\Rubeus\Rubeus.sln
-        run: |
-          msbuild /t:restore /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath="bin\Release" ${{ github.workspace }}\Rubeus\Rubeus.sln
-          pwd
-          ls
+        # run: |
+        #   msbuild /t:restore /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath="bin\Release" ${{ github.workspace }}\Rubeus\Rubeus.sln
+        #   pwd
+        #   ls
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
