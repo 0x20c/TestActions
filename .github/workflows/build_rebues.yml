@@ -39,9 +39,9 @@ jobs:
 
       - name: Restore the application
         # run: msbuild ${{ github.workspace }}\Rubeus\Rubeus.sln
-        # run: msbuild /t:restore /p:Configuration=Release /p:Platform="Any CPU" \Rubeus\Rubeus.sln
+        # run: msbuild /t:restore /p:Configuration=Release /p:Platform="Any CPU" Rubeus\Rubeus.sln
         run: |
-          msbuild /t:restore /p:Configuration=$env:Configuration /p:Platform="Any CPU" \Rubeus\Rubeus.sln
+          msbuild /t:restore /p:Configuration=$env:Configuration /p:Platform="Any CPU" Rubeus\Rubeus.sln
         env:
           Configuration: ${{ matrix.CONFIGURATION }}
 
