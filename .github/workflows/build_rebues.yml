@@ -1,0 +1,40 @@
+name: Build Rubeus
+
+run-name: Rubeus
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+      - name: Clone Rubeus
+        uses: actions/checkout@v3
+        with:
+          repository: GhostPack/Rubeus
+          ref: master
+          path: ${{ github.repository }}\Rubeus
+
+      - name: Install .Net Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1
+        with:
+          msbuild-architecture: x64
+
+      - name: Restore the application
+        run: |
+          msbuild ${{ github.workspace }}\Rubeus\Rubeus.sln
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Rubeus
+          path: ${{ github.repository }}\Rubeus
