@@ -26,22 +26,33 @@ jobs:
       - run: go version
 
       - name: Build on linux
+        env:
+          GOOS: linux
+          GOARCH: amd64      
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           cd hello
-          GOOS=linux GOARCH=amd64 go build -o main-linux .
+          go build -o main-linux .
           ls
       
       - name: Build on windows
+        # env:
+        #   GOOS: windows
+        #   GOARCH: amd64
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
+          $env:GOOS = "windows"
+          $env:GOARCH = "amd64"
           cd hello
-          GOOS=windows GOARCH=amd64 go build -o main-win.exe .
+          go build -o main-win.exe .
           ls
       
       - name: Build on macOS
+        env:
+          GOOS: darwin
+          GOARCH: amd64 
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           cd hello
-          GOOS=darwin GOARCH=amd64 go build -o main-darwin .
+          go build -o main-darwin .
           ls
