@@ -1,0 +1,38 @@
+name: Go Project Build
+
+run-name: hello world
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-all:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Build on linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          cd hello
+          GOOS=linux GOARCH=amd64 go build -o main-linux .
+          ls
+      
+      - name: Build on windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          cd hello
+          GOOS=windows GOARCH=amd64 go build -o main-win.exe .
+          ls
+      
+      - name: Build on macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          cd hello
+          GOOS=darwin GOARCH=amd64 go build -o main-darwin .
+          ls
