@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # 仅 Release 版本
-        CONFIGURATION: [Release]
+        CONFIGURATION: [Release, Debug]
     
     runs-on: windows-2019
 
@@ -34,8 +34,8 @@ jobs:
       
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1
-        with:
-          msbuild-architecture: x64
+        # with:
+        #   msbuild-architecture: x64
 
       - name: Restore the application
         # run: msbuild ${{ github.workspace }}\Rubeus\Rubeus.sln
